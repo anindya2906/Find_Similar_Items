@@ -41,15 +41,37 @@ def create_faiss_vectorstore(data):
     return faiss_vector_store
 
 
+def process_file(uploaded_file):
+    """Save, load and create vectorstore
+    """
+    faiss_vector_store = None
+    if uploaded_file is not None:
+        temp_file_path = save_uploaded_file(uploaded_file)
+        file_data = upload_csv_file(temp_file_path)
+        faiss_vector_store = create_faiss_vectorstore(file_data)
+    return faiss_vector_store
+
+
+def search(user_query, top_k=3):
+    results = faiss_vector_store.similarity_search(user_query)
+    search_results = []
+    for res in results[top_k]:
+        search_results.append(res.page_content)
+    return search_results
+
+
 st.set_page_config(page_title="Find Similar Item with LLM Embeddings")
 st.header("Find Similar Items with LLM Embeddings")
 
-uploaded_file = st.file_uploader("Upload CSV: ", type=["csv"])
+uploaded_file = st.file_uploader("Upload CSV: ", type=["csv"], label_visibility="hidden")
 
-if uploaded_file is not None:
-    temp_file_path = save_uploaded_file(uploaded_file)
-    file_data = upload_csv_file(temp_file_path)
-    faiss_vector_store = create_faiss_vectorstore(file_data)
-    res = faiss_vector_store.similarity_search("Item2")
-    for r in res:
-        st.write(r.page_content)
+faiss_vector_store = process_file(uploaded_file)
+
+if faiss_vector_store is not None:
+    st.subheader("Search similar things for: ")
+    user_query = st.text_input("User Query: ", key="user_query", label_visibility="hidden")
+    if user_query is not None:
+        results = search(user_query)
+        st.subheader("Similar Items: ")
+        for res in results:
+            st.write(res)
