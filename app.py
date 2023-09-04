@@ -70,7 +70,8 @@ faiss_vector_store = process_file(uploaded_file)
 if faiss_vector_store is not None:
     st.subheader("Search similar things for: ")
     user_query = st.text_input("User Query: ", key="user_query", label_visibility="hidden")
-    if user_query is not None:
+    submit = st.button("Search")
+    if submit:
         results = search(user_query)
         st.subheader("Similar Items: ")
         for res in results:
