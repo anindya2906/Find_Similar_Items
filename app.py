@@ -27,5 +27,8 @@ st.header("Find Similar Items with LLM Embeddings")
 
 uploaded_file = st.file_uploader("Upload CSV: ", type=["csv"])
 
-if uploaded_file:
-    load_csv_data(uploaded_file)
+if uploaded_file is not None:
+    # file_bytes_data = uploaded_file.getvalue()
+
+    # load_csv_data(uploaded_file)
+    st.write(uploaded_file.name)
