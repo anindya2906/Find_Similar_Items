@@ -50,4 +50,6 @@ if uploaded_file is not None:
     temp_file_path = save_uploaded_file(uploaded_file)
     file_data = upload_csv_file(temp_file_path)
     faiss_vector_store = create_faiss_vectorstore(file_data)
-    st.write("Done")
+    res = faiss_vector_store.similarity_search("Item2")
+    for r in res:
+        st.write(r.page_content)
