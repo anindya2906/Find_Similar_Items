@@ -56,7 +56,7 @@ def search(user_query, top_k=3):
     """Similarity search
     """
     results = faiss_vector_store.similarity_search_with_relevance_scores(user_query, k=top_k+10)
-    results = filter(lambda x: x[1] > 0.7, results)
+    results = list(filter(lambda x: x[1] > 0.7, results))
     search_results = []
     for res, score in results[:top_k]:
         search_results.append({"item": res.page_content.split(":")[0], "score": score})
