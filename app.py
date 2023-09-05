@@ -59,7 +59,7 @@ def search(user_query, top_k=3):
     results = list(filter(lambda x: x[1] > 0.7, results))
     search_results = []
     for res, score in results[:top_k]:
-        search_results.append({"item": res.page_content.split(":")[0], "score": score})
+        search_results.append({"item": res.page_content.split(":")[1], "score": score})
     return search_results
 
 
