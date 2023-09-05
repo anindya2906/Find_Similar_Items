@@ -12,7 +12,7 @@ load_dotenv()
 
 openai_embd = OpenAIEmbeddings(model="text-embedding-ada-002")
 
-def upload_csv_file(csv_file):
+def load_csv_file(csv_file):
     """Load csv data
     """
     loader = CSVLoader(file_path=csv_file, csv_args={
@@ -47,16 +47,19 @@ def process_file(uploaded_file):
     faiss_vector_store = None
     if uploaded_file is not None:
         temp_file_path = save_uploaded_file(uploaded_file)
-        file_data = upload_csv_file(temp_file_path)
+        file_data = load_csv_file(temp_file_path)
         faiss_vector_store = create_faiss_vectorstore(file_data)
     return faiss_vector_store
 
 
 def search(user_query, top_k=3):
-    results = faiss_vector_store.similarity_search(user_query)
+    """Similarity search
+    """
+    results = faiss_vector_store.similarity_search_with_relevance_scores(user_query, k=top_k+10)
+    results = filter(lambda x: x[1] > 0.7, results)
     search_results = []
-    for res in results[:top_k]:
-        search_results.append(res.page_content)
+    for res, score in results[:top_k]:
+        search_results.append({"item": res.page_content.split(":")[0], "score": score})
     return search_results
 
 
@@ -75,4 +78,4 @@ if faiss_vector_store is not None:
         results = search(user_query)
         st.subheader("Similar Items: ")
         for res in results:
-            st.write(res)
+            st.write(f'{res["item"]} - {res["score"]}')
