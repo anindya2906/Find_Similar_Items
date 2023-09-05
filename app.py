@@ -55,7 +55,7 @@ def process_file(uploaded_file):
 def search(user_query, top_k=3):
     results = faiss_vector_store.similarity_search(user_query)
     search_results = []
-    for res in results[top_k]:
+    for res in results[:top_k]:
         search_results.append(res.page_content)
     return search_results
 
